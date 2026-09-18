@@ -156,6 +156,10 @@ if not os.path.exists("CNN_mnist_model.npz"):
     v_bias_output = np.zeros_like(bias_output)
 
     t = 0
+
+    cost_past = []
+    accuracy_past = []
+
     np.savez(
         "CNN_mnist_model.npz",
         kernal=kernal,
@@ -203,7 +207,10 @@ if not os.path.exists("CNN_mnist_model.npz"):
         v_weights_hidden2_output=v_weights_hidden2_output,
         v_bias_output=v_bias_output,
 
-        t=t
+        t=t,
+
+        cost_past=cost_past,
+        accuracy_past=accuracy_past
     )
 #load model
 model = np.load("CNN_mnist_model.npz")
@@ -258,6 +265,9 @@ v_weights_hidden2_output = np.asarray(model["v_weights_hidden2_output"], dtype=n
 v_bias_output = np.asarray(model["v_bias_output"], dtype=np.float32)
 
 t = int(model["t"]) #not an array
+
+cost_past =  model["cost_past"].tolist() #for graphing cost and loss over time against number of batches + converts into standard appendable list
+accuracy_past =  model["accuracy_past"].tolist()
 
 print("batch count:",t)
 
@@ -316,7 +326,10 @@ for e in range(10): #train for 5 epochs
                 v_weights_hidden2_output=v_weights_hidden2_output,
                 v_bias_output=v_bias_output,
 
-                t=t
+                t=t,
+
+                cost_past=cost_past,
+                accuracy_past=accuracy_past
             )
             print("model saved")
             
@@ -494,6 +507,12 @@ for e in range(10): #train for 5 epochs
         print("output neurons:", output_activation)
         print("predicted cats:", predictions.count(1))
         print("predicted dogs:", predictions.count(0))
+        if b == 0:
+            cost_past.append(1) #append a 1 for the first batch cost data point to aovid initital cost spike (this allows the cost to stabilize for the first 50 batches)
+            accuracy_past.append(batch_accuracy)
+        elif b % 50 == 0: #add an new graphing point every 50 batches
+            cost_past.append(batch_cost.get()) #append batch cost and accuracy
+            accuracy_past.append(batch_accuracy)
 
         #backprop
 
@@ -911,7 +930,10 @@ for e in range(10): #train for 5 epochs
                 v_weights_hidden2_output=v[12],
                 v_bias_output=v[13],
 
-                t=t
+                t=t,
+
+                cost_past=cost_past,
+                accuracy_past=accuracy_past
             )
             print("model saved")
 
@@ -968,7 +990,10 @@ for e in range(10): #train for 5 epochs
         v_weights_hidden2_output=v[12],
         v_bias_output=v[13],
 
-        t=t
+        t=t,
+
+        cost_past=cost_past,
+        accuracy_past=accuracy_past
     )
     print("model saved")
 print("training finished")
