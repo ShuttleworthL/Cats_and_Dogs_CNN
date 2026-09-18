@@ -10,3 +10,13 @@ the raw dataset used can be found at https://www.microsoft.com/en-us/download/de
 -most router consoles can be accessed by typing your ipv4 address into the address bar of any modern search engine, however port forwarding rules are usually blocked behind an admin password, this is generally found on the back of the router
 
 -note that the models are both currently running with grayscale training data as that is how the images where processed in dataset_image_processer.py script, and thus that is what the training code is set up to handle, however due to low accuracies after training I am currently working on a RGB model to hopefully provide more context and increase dataset accuracy.
+
+-additionally as part of the npz file along with the Adam parameters and model parameters, the past cost history and past accuracy history is stored to an array and recorded every 50 batches, this data can then be visualised and viewed in graph.py where there is a line graph for both accuracy and cost over batches, -note the first value for the cost is automatically overwritten as 1 as explained in both the trainer code and graph code, this is because initially the models cost is unstable and would spike and cause the graph to become difficult to read due to the elevated value bringing up the graph height relative to other values.
+
+-note you can save training my holding the s key in the terminal and when the batch finishes while you are holding s, it will save the current model values, it additionally saves after every epoch and after every 10 batches.
+
+-note although the past accuracy history and past cost history are only updated every 50 batches they are still saved alongside every other model save.
+
+-when the model is saved it saves: all Adam parameters, all model parameters, and both cost and accuracy past history. as a result of this you can stop anytime and continue training exactly where you left off.
+
+-furthermore as previously mentioned throughout when referring to "Adam" it references the popular Adam optimizer that is used in the code to stabilize gradients and parameter updates.
