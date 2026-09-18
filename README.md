@@ -13,6 +13,8 @@ the raw dataset used can be found at https://www.microsoft.com/en-us/download/de
 
 -additionally as part of the npz file along with the Adam parameters and model parameters, the past cost history and past accuracy history is stored to an array and recorded every 50 batches, this data can then be visualised and viewed in graph.py where there is a line graph for both accuracy and cost over batches, -note the first value for the cost is automatically overwritten as 1 as explained in both the trainer code and graph code, this is because initially the models cost is unstable and would spike and cause the graph to become difficult to read due to the elevated value bringing up the graph height relative to other values.
 
+-note when running graph.py to visualise progress, a png of the graph will automatically be downloaded, it is under the same name each time so unless you want the new graph to be overwritten each time you run the program, you should move the image out of the folder or rename it
+
 -note you can save training my holding the s key in the terminal and when the batch finishes while you are holding s, it will save the current model values, it additionally saves after every epoch and after every 10 batches.
 
 -note although the past accuracy history and past cost history are only updated every 50 batches they are still saved alongside every other model save.
