@@ -19,7 +19,7 @@ np.random.shuffle(dataset)
 #<==========functions==========>
 
 #update adam optimizer (takes in the model params, current gradients, m(gradients direction), v(gradient magnitude) and t(number of previous gradients))
-def update_adam(params, grads, m, v, t, learning_rate=0.002, beta1=0.9, beta2=0.99, epsilon=1e-8): #epsilon to prevent dividing by 0
+def update_adam(params, grads, m, v, t, learning_rate=3e-4, beta1=0.9, beta2=0.99, epsilon=1e-8): #epsilon to prevent dividing by 0
 
     for i in range(len(params)): #for every model parameter
         #update moving weighted averages
@@ -97,34 +97,34 @@ if not os.path.exists("CNN_mnist_model.npz"):
     #float 32 to decrease computation via data size whilst having negligible effect on accuracy
 
     #10 kernals (all 3x3)
-    kernal = (np.random.randn(10, 3, 3) * 0.1).astype(np.float32) #random init values for 10 3x3 kernal (filter) (small for first init values, hence 0.1) -(array of weights)
+    kernal = (np.random.randn(10, 3, 3) * np.sqrt(2/9)).astype(np.float32) #random init values for 10 3x3 kernal (filter) (small for first init values) -(array of weights)
     kernal_bias = np.zeros(10, dtype=np.float32) #init bias values for each kernal
 
     #20 groups of 10 kernals (each 3x3)
-    kernal_2 = (np.random.randn(20, 10, 3, 3) * 0.2).astype(np.float32) #random init values for 20 groups of 10 3x3 kernal (filter) (small for first init values, hence 0.1) -(array of weights)
+    kernal_2 = (np.random.randn(20, 10, 3, 3) * np.sqrt(2/90)).astype(np.float32) #random init values for 20 groups of 10 3x3 kernal (filter) (small for first init values) -(array of weights)
     kernal_bias_2 = np.zeros(20, dtype=np.float32) #init bias values for each kernal
 
     #40 groups of 20 kernals (each 3x3)
-    kernal_3 = (np.random.randn(40, 20, 3, 3) * 0.1).astype(np.float32) #random init values for 40 groups of 20 3x3 kernal (filter) (small for first init values, hence 0.1) -(array of weights)
+    kernal_3 = (np.random.randn(40, 20, 3, 3) * np.sqrt(2/180)).astype(np.float32) #random init values for 40 groups of 20 3x3 kernal (filter) (small for first init values) -(array of weights)
     kernal_bias_3 = np.zeros(40, dtype=np.float32) #init bias values for each kernal
 
     #80 groups of 40 kernals (each 3x3)
-    kernal_4 = (np.random.randn(80, 40, 3, 3) * 0.1).astype(np.float32) #random init values for 80 groups of 40 3x3 kernal (filter) (small for first init values, hence 0.1) -(array of weights)
+    kernal_4 = (np.random.randn(80, 40, 3, 3) * np.sqrt(2/360)).astype(np.float32) #random init values for 80 groups of 40 3x3 kernal (filter) (small for first init values) -(array of weights)
     kernal_bias_4 = np.zeros(80, dtype=np.float32) #init bias values for each kernal
 
     #random starting weights and bias (input layer neurons do not have bias)
 
     #128 rows, 18000 columns, for 18000 input neurons to 128 hidden neurons e.g. [0.1, -0.3, 0.7]x128 ect ...
     #weights from input to hidden layer
-    weights_input_hidden = (np.random.randn(18000, 128) * 0.1).astype(np.float32) #random array of weights in gaussian distrubution (scaled down for start values)
+    weights_input_hidden = (np.random.randn(18000, 128) * np.sqrt(2/18000)).astype(np.float32) #random array of weights in gaussian distrubution (scaled down for start values)
     bias_hidden = np.zeros(128, dtype=np.float32) #bias for 128 hidden neurons (0 for start values)
 
     #64 rows, 128 columns, for 128 hidden neurons to 64 second hidden layer neurons
-    weights_hidden_hidden2 = (np.random.randn(128, 64) * 0.1).astype(np.float32)
+    weights_hidden_hidden2 = (np.random.randn(128, 64) * np.sqrt(2/128)).astype(np.float32)
     bias_hidden2 = np.zeros(64, dtype=np.float32) #bias for 64 second hidden layer neurons
 
     #2 rows, 64 columns, for 64 hidden neurons to 2 output neurons
-    weights_hidden2_output = (np.random.randn(64, 2) * 0.1).astype(np.float32)
+    weights_hidden2_output = (np.random.randn(64, 2) * np.sqrt(2/64)).astype(np.float32)
     bias_output = np.zeros(2, dtype=np.float32) #bias for 2 output neurons
 
     m_kernal = np.zeros_like(kernal)
