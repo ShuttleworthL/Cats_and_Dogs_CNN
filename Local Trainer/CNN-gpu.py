@@ -24,8 +24,10 @@ def update_adam(params, grads, m, v, t, learning_rate=0.002, beta1=0.9, beta2=0.
 
     for i in range(len(params)): #for every model parameter
         #update moving weighted averages
-        m[i] = beta1 * m[i] + (1-beta1) * grads[i] #weighted average of previous weighted average and current gradient
-        v[i] = beta2 * v[i] + (1-beta2) * (grads[i] ** 2) #uses diffrent beta to compensate for squaring
+        m[i] *= beta1 #weighted average of previous weighted average and current gradient
+        m[i] += (1-beta1) * grads[i]
+        v[i] *= beta2 #uses diffrent beta to compensate for squaring
+        v[i] += (1-beta2) * (grads[i] ** 2)
 
         #bias correction
         #when computing first gradients the moving average is smaller than it should be becuse the previous gradients no longer exist so are 0
@@ -506,7 +508,8 @@ for e in range(10): #train for 5 epochs
         print("cost:", batch_cost)
         batch_accuracy = numpy.mean(batch_accuracy)
         print("accuracy:", batch_accuracy)
-        print("output neurons:", output_activation)
+        print("output neurons:", output_raw)
+        print("output neurons(softmax):", output_activation)
         print("predicted cats:", predictions.count(1))
         print("predicted dogs:", predictions.count(0))
         if b == 0:
