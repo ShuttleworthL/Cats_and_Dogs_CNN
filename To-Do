@@ -1,0 +1,4 @@
+-add validation average past for cost also, and specify which is which
+-add indicator for validation set complete
+-carry over changes to CNN-cpu
+-carry over changes to Server-Client system
