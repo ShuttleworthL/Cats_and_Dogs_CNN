@@ -273,11 +273,11 @@ accuracy_past =  model["accuracy_past"].tolist()
 
 print("batch count:",t)
 
-for e in range(10): #train for 5 epochs
-    batch_start = 0 #start from first training images again
+for e in range(20): #train for 20 epochs in one go
+    batch_start = 1250 #start from first training images again
     np.random.shuffle(dataset) #randomly shuffle again
 
-    for b in range(25000//batch_size): #integer division (25000/64 is not clean)
+    for b in range(22500//batch_size): #integer division (22500/64 is not clean) 22500 because 10% is validation
 
         if keyboard.is_pressed("s"): #if s key is saved
             print("saving model...")
@@ -510,12 +510,8 @@ for e in range(10): #train for 5 epochs
         print("output neurons(softmax):", output_activation)
         print("predicted cats:", predictions.count(1))
         print("predicted dogs:", predictions.count(0))
-        if b == 0:
-            cost_past.append(1) #append a 1 for the first batch cost data point to aovid initital cost spike (this allows the cost to stabilize for the first 50 batches)
-            accuracy_past.append(batch_accuracy)
-        elif b % 50 == 0: #add an new graphing point every 50 batches
-            cost_past.append(batch_cost.get()) #append batch cost and accuracy
-            accuracy_past.append(batch_accuracy)
+        cost_past.append(batch_cost.get()) #append batch cost and accuracy
+        accuracy_past.append(batch_accuracy)
 
         #backprop
 
