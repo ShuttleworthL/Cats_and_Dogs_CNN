@@ -1,6 +1,8 @@
 # Cats_and_Dogs_CNN
 image recognition model for 240x240 cats and dogs images from Kaggle cats and dogs dataset
 
+the model starts with the 240x240 input image before being fed through 4 convolutional layers (using same/padded convolution) each ending into 2x2 max pooling to haf feature map size, with after all convo layers a feature map of dimensions 80x15x15, before entering the 2 dense layers to 
+
 the raw dataset used can be found at https://www.microsoft.com/en-us/download/details.aspx?id=54765&msockid=152e33ac818f6f21253525be806f6e36, however note the training data used in the code was first passed through the dataset_image_processer.py script, resulting in the correct Processed folder which is later accessed to train the model.
 
 -note due to currently low training accuracies due to grayscale training, a pre-trained model is not attached, however on running either of the local trainers (CPU or GPU accelerated) if no model is found it will create a new one, with identical name and format: "CNN_mnist_model.npz" (-note if using the NPZ Viewer vscode extension it may give and error something along the lines of "Error reading NPZ file, stream destroyed", this is normal and I assume to be a product of the size of the model, however the NPZ is still accessible and can still be read and write to. -I hope to be able to post a pre-trained model soon as well as the addition of RGB training data.
