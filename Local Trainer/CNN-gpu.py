@@ -6,7 +6,7 @@ import time #for measuring code time
 import os #for checking for existing model
 
 #number of training examples before computing cost and backprop
-batch_size = 64
+batch_size = 32
 
 dataset = []
 
@@ -119,9 +119,9 @@ if not os.path.exists("CNN_mnist_model.npz"):
 
     #random starting weights and bias (input layer neurons do not have bias)
 
-    #128 rows, 18000 columns, for 18000 input neurons to 128 hidden neurons e.g. [0.1, -0.3, 0.7]x128 ect ...
+    #128 rows, 80 columns, for 80 input neurons to 128 hidden neurons e.g. [0.1, -0.3, 0.7]x128 ect ...
     #weights from input to hidden layer
-    weights_input_hidden = (np.random.randn(18000, 128) * np.sqrt(2/18000)).astype(np.float32) #random array of weights in gaussian distrubution (scaled down for start values)
+    weights_input_hidden = (np.random.randn(80, 128) * np.sqrt(2/80)).astype(np.float32) #random array of weights in gaussian distrubution (scaled down for start values)
     bias_hidden = np.zeros(128, dtype=np.float32) #bias for 128 hidden neurons (0 for start values)
 
     #64 rows, 128 columns, for 128 hidden neurons to 64 second hidden layer neurons
@@ -288,12 +288,13 @@ validation_average_past = model["validation_average_past"].tolist()
 
 batch_start = int(model["batch_start"])
 validation = model["validation"]
+if batch_start + batch_size > (2500 if validation else 22500): #decides if epoch is finsihed based on weather it is validation or training epoch
+    batch_start = 0
 
 print("batch count:",t)
 
 for e in range(20): #train for 20 epochs in one go
     if validation == True:
-        batch_start = 0 #restart as validation past average is not stored so needs to start again + dataset will be shifted
         epoch_length = 2500 #test images
         current_dataset = validation_dataset
     else:
@@ -302,7 +303,9 @@ for e in range(20): #train for 20 epochs in one go
         numpy.random.shuffle(training_dataset) #randomly shuffle again
     validation_accuracy = []
 
-    for b in range(epoch_length//batch_size): #integer division (22500or2500/64 is not clean) 22500or2500 because 10% is validation
+    remaining_batches = (epoch_length - batch_start) // batch_size
+
+    for b in range(remaining_batches): #integer division (22500or2500/32 is not clean) 22500or2500 because 10% is validation
 
         if keyboard.is_pressed("s"): #if s key is saved
             print("saving model...")
@@ -494,12 +497,11 @@ for e in range(20): #train for 20 epochs in one go
             batch_activation_pool4.append(feature_maps_4)
             batch_pool_mask4.append(pool4_mask)
 
-            input_layer = feature_maps_4.flatten()
+            input_layer = np.mean(feature_maps_4, axis=(1,2)) #collapse into 80 from 80x15x15 via mean average of each 15x15 feature map (global average pooling)
 
             #<==========dense layers==========>
 
-            #input data (18000 neurons)
-            #flatten converts 80x15x15 matrix of grayscale values down to 1d 18000 long vector of grayscale values
+            #input data (80 neurons)
             #scaled down grayscale values from 255 to 0-1 range (activation range)
             inputs = input_layer
             batch_activation_input.append(inputs)
@@ -619,6 +621,7 @@ for e in range(20): #train for 20 epochs in one go
             #calculating partial derivatives of cost with respect to every weight and bias accross all training examples in the batch
 
             #<==========dense layers backprop==========>
+
                 #how sensitive the cost function is to the output layer weighted sums
                 #for softmax combined with cross entropy this simplifies to:
                 #predicted probabilities - expected probabilities
@@ -656,7 +659,7 @@ for e in range(20): #train for 20 epochs in one go
                 delta3 = weights_hidden_hidden2 @ delta2#how sensitive hidden2 layer weighted sum is to previous activation * delta2 (matrix multiplication)
                 delta3 *= ReLU_derivative(z3) #how sensitive hidden layer activations are to hidden layer weighted sum
 
-            #18000 collumns -(18000input neurons-18000 activations), to
+            #80 collumns -(80input neurons-80 activations), to
             #128 rows -(128hidden neurons-128 cost derivatives)
             #for every location in the weight matrix, calculate its derivative from previous corosponding activation (activation it was multiplied by)
             #and cost functions sensitivity to hidden layer weighted sum  and multiply them together (using outer product)
@@ -670,10 +673,11 @@ for e in range(20): #train for 20 epochs in one go
             
             #<==========conv layer 4 backprop==========>
 
-            #18000 collumns -(18000input neurons), to
+            #80 collumns -(80input neurons), to
             #128 rows -(128hidden neurons)
                 delta4 = weights_input_hidden @ delta3 #how sensitive hidden layer weighted sum is to previous activation * delta3
-                delta4 = delta4.reshape(80, 15, 15) #how sensitive cost is to global average pooled values
+                delta4 = delta4.reshape(80) #how sensitive cost is to global average pooled values
+                delta4 = delta4[:, None, None] / (15*15) #add extra 2 dimensions for those of raw feature maps and divide by 15*15 (225) as thats how much each value in a feature map contributed to global average pool values
 
                 grad = delta4[:, :, :, None, None] #reshaping delta4 to broadcast with m4 regions
                 #expand the pooled gradient back into convolution layer 4 space by assigning each delta4
@@ -981,6 +985,11 @@ for e in range(20): #train for 20 epochs in one go
     if validation == True:
         validation_average = sum(validation_accuracy)/(len(validation_accuracy))
         validation_average_past.append(validation_average)
+    if validation == False:
+        validation = True
+    else:
+        validation = False
+    batch_start = 0
     print("epoch:",e+1, " complete")
     numpy.savez( #save model after every epoch (all batches completed)
         "CNN_mnist_model.npz",
@@ -1039,11 +1048,6 @@ for e in range(20): #train for 20 epochs in one go
         validation=validation
     )
     print("model saved")
-    if validation == False:
-        validation = True
-    else:
-        validation = False
-        batch_start = 0
 print("training finished")
 
 #adapt for cat+dog dataset
