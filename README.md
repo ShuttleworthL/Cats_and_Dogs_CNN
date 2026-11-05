@@ -24,3 +24,5 @@ the raw dataset used can be found at https://www.microsoft.com/en-us/download/de
 -when the model is saved it saves: all Adam parameters, all model parameters, and both cost and accuracy past history. as a result of this you can stop anytime and continue training exactly where you left off.
 
 -furthermore as previously mentioned throughout when referring to "Adam" it references the popular Adam optimizer that is used in the code to stabilize gradients and parameter updates.
+
+-note for the training graph the green dots in the validation plot are validation points showing deviation from training accuracies if they dip too low, as you can see we currently have minimal overfitting, additionally the central line is a convoluted running average taking in 50 batches at a time and the wide plots are true batch results.
