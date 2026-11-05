@@ -64,10 +64,13 @@ plt.plot(x, accuracy_past, color="blue", linewidth=2)
 plt.plot(x_smooth, accuracy_past_smooth, color='orange') #(orange - for max contrast)
 
 for i in range(len(validation_average_past)):
-    plt.plot((i+1)*22500, validation_average_past[i], 'ks', markersize=8) #(i+1)*22500 to correctly plot the dot(black square) at the emd of the batch that triggered the validation
+    plt.plot((i+1)*703, validation_average_past[i], 'gs', markersize=8) #(i+1)*703 to correctly plot the dot(green square) at the end of the batch that triggered the validation (703 is approximatly ho wmany batches there are per epoch currently -22500/32)
 
 plt.tight_layout() #correctly layout subplots
 
 plt.savefig("Cost+Accuracy_graph.png", dpi=300, bbox_inches="tight") #save graph as png (dpi-dots per inch/effective resolution)
+
+for i in validation_average_past: #print precise values of every validation
+    print(i)
 
 plt.show()
